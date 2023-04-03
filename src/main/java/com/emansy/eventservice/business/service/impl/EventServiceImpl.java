@@ -11,8 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -51,5 +55,24 @@ public class EventServiceImpl implements EventService {
     public void deleteById(Long id) {
         eventRepository.deleteById(id);
         log.info("Event Deleted id : {}", id);
+    }
+
+    @Override
+    public Set<EventDto> getEventsByIdsAndDate(Set<Long> eventIds, String fromDate, String thruDate) {
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+        if (Objects.nonNull(fromDate)) {
+            startDate = LocalDate.parse(fromDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+        if (Objects.nonNull(thruDate)) {
+            endDate = LocalDate.parse(thruDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+        List<EventEntity> events=eventRepository.findByIdInAndDateBetween(eventIds,startDate,endDate);
+
+        Set<EventDto> eventDtos = events.stream()
+                .map(eventEntity -> new EventDto(eventEntity.getId(), eventEntity.getTitle(), eventEntity.getDetails(), eventEntity.getDate(), eventEntity.getStartTime(), eventEntity.getEndTime()))
+                .collect(Collectors.toSet());
+
+        return eventDtos;
     }
 }

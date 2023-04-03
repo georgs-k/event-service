@@ -8,9 +8,9 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class KafkaTopicConfig {
 
-    @Bean
-    public NewTopic javaTopic_json(){
-        return TopicBuilder.name("event_topic")
-                .build();
-    }
+//    @Bean
+//    public NewTopic javaTopic_json() {
+//        return TopicBuilder.name("events-request")
+//                .build();
+//    }
 }

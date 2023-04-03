@@ -2,7 +2,9 @@ package com.emansy.eventservice.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.FutureOrPresent;
@@ -11,6 +13,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Component
 public class EventDto {
     //@Positive(message = "Positive integer is required")

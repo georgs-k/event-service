@@ -15,11 +15,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 
 @Api(tags = "Event Controller")
 @Log4j2
@@ -140,4 +142,25 @@ public class EventController {
 
     }
 
+
+        @ApiOperation(value = "Find Events: Given event Ids and Date Range",
+            notes = "Provide date range and event Ids to filter the events",
+            response = EventDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "The request has succeeded"),
+            @ApiResponse(code = 400, message = "Missed required parameters, parameters are not valid"),
+            @ApiResponse(code = 401, message = "The request requires user authentication"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The server has not found anything matching the Request-URI"),
+            @ApiResponse(code = 500, message = "Server error")})
+    @GetMapping(value = "/{eventIds}/{startDate}/{endDate}")
+    public Set<EventDto> findAllEventByIdsBetween(@NotEmpty @PathVariable Set<Long> eventIds, @NotEmpty @PathVariable String startDate,@PathVariable String endDate) {
+        Set<EventDto> eventDtos = eventService.getEventsByIdsAndDate(eventIds, startDate, endDate);
+        if (eventDtos.isEmpty() || eventDtos == null) {
+            log.info("No Event Found between Date: {} and {}.", startDate, endDate);
+            return null;
+        }
+        log.info("Events retrieved from DB {}", eventDtos);
+        return eventDtos;
+    }
 }
