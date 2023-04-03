@@ -36,7 +36,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Optional<EventDto> getByID(Long id) {
-        Optional<EventEntity> eventEntity = Optional.ofNullable(eventRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Event Id: does not exist in Db")));
+        Optional<EventEntity> eventEntity = Optional.ofNullable(eventRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Event Id: " + id + " does not exist in Db")));
         Optional<EventDto> eventDto = eventEntity.flatMap(card -> Optional.ofNullable(eventMapper.entityToDto(eventEntity.get())));
         log.info("Service layer -> Event with id {} is {}", id, eventDto);
         return eventDto;

@@ -10,14 +10,15 @@ import java.util.Optional;
 
 public interface EventService {
 
- public EventDto create(EventEntity eventEntity);
- public List<EventEntity> getAllEventBetween(LocalDate startDate, LocalDate endDate);
+    public EventDto create(EventEntity eventEntity);
 
- public Optional<EventDto> getByID(Long Id);
+    public List<EventEntity> getAllEventBetween(LocalDate startDate, LocalDate endDate);
 
- public Boolean existsInDb(Long id);
+    public Optional<EventDto> getByID(Long Id);
 
- public void deleteById(Long id);
+    public Boolean existsInDb(Long id);
+
+    public void deleteById(Long id);
 
 
 }
