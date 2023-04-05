@@ -1,13 +1,13 @@
 package com.emansy.eventservice.kafka;
 
 
+import com.emansy.eventservice.business.service.EventService;
 import com.emansy.eventservice.model.EventDto;
 import com.emansy.eventservice.model.EventIdsWithinDatesDto;
 import com.emansy.eventservice.model.EventsDto;
-import com.emansy.eventservice.web.controller.EventController;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -18,23 +18,26 @@ import java.util.Set;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class EventConsumer {
-    @Autowired
-    private EventController eventController;
+
+    private final EventService eventService;
 
     @KafkaListener(topics = "events-request", groupId = "event-group")
     @SendTo
-    public Message<EventsDto> consume(ConsumerRecord<String, EventIdsWithinDatesDto> consumerRecord) {
+    public Message<EventsDto> handleEventRequestBetween(ConsumerRecord<String, EventIdsWithinDatesDto> consumerRecord) {
         EventIdsWithinDatesDto eventIdsWithinDatesDto = consumerRecord.value();
-        log.info("Message received from Kafka-> {}", eventIdsWithinDatesDto);
         Set<Long> eventDtoSet = eventIdsWithinDatesDto.getIds();
         String fromDate = eventIdsWithinDatesDto.getFromDate();
         String thruDate = eventIdsWithinDatesDto.getThruDate();
 
+        log.info("Request for filtering Events between date range for the specific employee is received from Kafka topic events-request -> {}", eventIdsWithinDatesDto);
+
         if (thruDate.isEmpty()) {
             thruDate = null;
         }
-        Set<EventDto> eventDto = eventController.findAllEventByIdsBetween(eventDtoSet, fromDate, thruDate);
+        Set<EventDto> eventDto = eventService.getEventsByIdsAndDate(eventDtoSet, fromDate, thruDate);
+        log.info("Response sent to Kafka topic events-response-> {}", eventIdsWithinDatesDto);
         EventsDto eventsDto = new EventsDto(eventDto);
         return MessageBuilder.withPayload(eventsDto).build();
     }

@@ -6,8 +6,8 @@ import com.emansy.eventservice.business.repository.EventRepository;
 import com.emansy.eventservice.business.repository.model.EventEntity;
 import com.emansy.eventservice.business.service.EventService;
 import com.emansy.eventservice.model.EventDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
-    @Autowired
-    private EventRepository eventRepository;
 
-    @Autowired
-    private EventMapper eventMapper;
+    private final EventRepository eventRepository;
+
+    private final EventMapper eventMapper;
 
     @Override
     public EventDto create(EventEntity eventEntity) {
@@ -60,18 +60,18 @@ public class EventServiceImpl implements EventService {
     @Override
     public Set<EventDto> getEventsByIdsAndDate(Set<Long> eventIds, String fromDate, String thruDate) {
         LocalDate startDate = null;
-        LocalDate endDate = null;
+        List<EventEntity> events = null;
         if (Objects.nonNull(fromDate)) {
             startDate = LocalDate.parse(fromDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         }
         if (Objects.nonNull(thruDate)) {
-            endDate = LocalDate.parse(thruDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDate endDate = LocalDate.parse(thruDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            events = eventRepository.findByIdInAndDateBetween(eventIds, startDate, endDate);
+        } else {
+            events = eventRepository.findByIdInAndDateGreaterThanEqual(eventIds, startDate);
         }
-        List<EventEntity> events=eventRepository.findByIdInAndDateBetween(eventIds,startDate,endDate);
 
-        Set<EventDto> eventDtos = events.stream()
-                .map(eventEntity -> new EventDto(eventEntity.getId(), eventEntity.getTitle(), eventEntity.getDetails(), eventEntity.getDate(), eventEntity.getStartTime(), eventEntity.getEndTime()))
-                .collect(Collectors.toSet());
+        Set<EventDto> eventDtos = events.stream().map(eventEntity -> new EventDto(eventEntity.getId(), eventEntity.getTitle(), eventEntity.getDetails(), eventEntity.getDate(), eventEntity.getStartTime(), eventEntity.getEndTime())).collect(Collectors.toSet());
 
         return eventDtos;
     }

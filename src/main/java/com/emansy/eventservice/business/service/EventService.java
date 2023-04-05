@@ -3,7 +3,6 @@ package com.emansy.eventservice.business.service;
 
 import com.emansy.eventservice.business.repository.model.EventEntity;
 import com.emansy.eventservice.model.EventDto;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +21,7 @@ public interface EventService {
 
     public void deleteById(Long id);
 
-    public Set<EventDto> getEventsByIdsAndDate(Set<Long> eventIds, String fromDate,String thruDate);
+    public Set<EventDto> getEventsByIdsAndDate(Set<Long> eventIds, String fromDate, String thruDate);
 
 
 }

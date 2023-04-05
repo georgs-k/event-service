@@ -11,6 +11,9 @@ import java.util.Set;
 @Repository
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
     List<EventEntity> findByDateBetween(LocalDate startDate, LocalDate endDate);
+
     List<EventEntity> findByIdInAndDateBetween(Set<Long> eventIds, LocalDate startDate, LocalDate endDate);
+
+    List<EventEntity> findByIdInAndDateGreaterThanEqual(Set<Long> eventIds, LocalDate startDate);
 
 }
