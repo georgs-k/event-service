@@ -11,11 +11,11 @@ import java.util.Set;
 
 public interface EventService {
 
-    public EventDto create(EventEntity eventEntity);
+    public EventDto create(EventDto eventDto);
 
-    public List<EventEntity> getAllEventBetween(LocalDate startDate, LocalDate endDate);
+    public List<EventDto> getAllEventBetween(LocalDate startDate, LocalDate endDate);
 
-    public Optional<EventDto> getByID(Long Id);
+    public EventDto getByID(Long Id);
 
     public Boolean existsInDb(Long id);
 

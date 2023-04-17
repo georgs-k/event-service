@@ -15,27 +15,33 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorModel> handlerResourceNotFoundException(ResourceNotFoundException ex) {
-        ErrorModel errorModel = ErrorModel.builder().message(ex.getMessage()).success(true).status(HttpStatus.BAD_REQUEST).build();
+        ErrorModel errorModel = ErrorModel.builder().message(ex.getLocalizedMessage()).success(true).status(HttpStatus.BAD_REQUEST).build();
         return new ResponseEntity<ErrorModel>(errorModel, HttpStatus.NOT_FOUND);
     }
 
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorModel> handlerHttpMessageNotReadableException(HttpMessageNotReadableException ex){
-          ErrorModel errorModel=ErrorModel.builder().message(ex.getMessage()).success(true).status(HttpStatus.BAD_REQUEST).build();
-        return  new ResponseEntity<ErrorModel>(errorModel, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorModel> handlerHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        ErrorModel errorModel = ErrorModel.builder().message(ex.getMessage()).success(true).status(HttpStatus.BAD_REQUEST).build();
+        return new ResponseEntity<ErrorModel>(errorModel, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String,String>> handlerHttpMessageNotReadableException(MethodArgumentNotValidException ex){
-     Map<String,String> errorMap=new HashMap<String,String>();
-      ex.getBindingResult().getFieldErrors().forEach(error -> errorMap.put(error.getField(),error.getDefaultMessage()));
+    public ResponseEntity<Map<String, String>> handlerHttpMessageNotReadableException(MethodArgumentNotValidException ex) {
+        Map<String, String> errorMap = new HashMap<String, String>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> errorMap.put(error.getField(), error.getDefaultMessage()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorModel> handlerConstraintViolationException(ConstraintViolationException ex){
-        ErrorModel errorModel=ErrorModel.builder().message(ex.getMessage()).success(true).status(HttpStatus.BAD_REQUEST).build();
+    public ResponseEntity<ErrorModel> handlerConstraintViolationException(ConstraintViolationException ex) {
+        ErrorModel errorModel = ErrorModel.builder().message(ex.getMessage()).success(true).status(HttpStatus.BAD_REQUEST).build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorModel);
+    }
+
+    @ExceptionHandler(NoContentException.class)
+    public ResponseEntity<ErrorModel> handlerNoContentException(NoContentException ex) {
+        ErrorModel errorModel = ErrorModel.builder().message(ex.getLocalizedMessage()).success(true).status(HttpStatus.NO_CONTENT).build();
+        return new ResponseEntity<ErrorModel>(errorModel, HttpStatus.NO_CONTENT);
     }
 }

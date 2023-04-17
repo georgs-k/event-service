@@ -27,17 +27,17 @@ public class EventConsumer {
     @SendTo
     public Message<EventsDto> handleEventRequestBetween(ConsumerRecord<String, EventIdsWithinDatesDto> consumerRecord) {
         EventIdsWithinDatesDto eventIdsWithinDatesDto = consumerRecord.value();
+        log.info("Request for filtering Events between date range for the specific employee is received from Kafka topic events-request -> {}", eventIdsWithinDatesDto);
         Set<Long> eventDtoSet = eventIdsWithinDatesDto.getIds();
         String fromDate = eventIdsWithinDatesDto.getFromDate();
         String thruDate = eventIdsWithinDatesDto.getThruDate();
 
-        log.info("Request for filtering Events between date range for the specific employee is received from Kafka topic events-request -> {}", eventIdsWithinDatesDto);
 
         if (thruDate.isEmpty()) {
             thruDate = null;
         }
         Set<EventDto> eventDto = eventService.getEventsByIdsAndDate(eventDtoSet, fromDate, thruDate);
-        log.info("Response sent to Kafka topic events-response-> {}", eventIdsWithinDatesDto);
+        log.info("Response sent to Kafka topic events-response-> {}", eventDto);
         EventsDto eventsDto = new EventsDto(eventDto);
         return MessageBuilder.withPayload(eventsDto).build();
     }
